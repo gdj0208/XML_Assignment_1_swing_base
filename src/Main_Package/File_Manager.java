@@ -11,8 +11,9 @@ public class File_Manager extends JPanel {
 	private JFrame Main_Frame;
 	private Main_Manager mManager;
 	private JFileChooser fChooser = new JFileChooser();
-    int option;
-    File file;
+	
+    private int option;
+    private File file;
 	
 	public File_Manager(JFrame Main_Frame, Main_Manager mManager) {
 		this.Main_Frame = Main_Frame;
@@ -50,25 +51,30 @@ public class File_Manager extends JPanel {
                 String line;
                 while ((line = reader.readLine()) != null) {
                 	mManager.text_area.append(line + "\n");
+                	mManager.text.add(line);
                 }
             } 
             catch (IOException exc) { JOptionPane.showMessageDialog(this, "파일을 열 수 없습니다.", "오류", JOptionPane.ERROR_MESSAGE); }
         }
+		mManager.file_existence = true;
 	}
 	
 	private void make_file() {
 		String title = "example.txt";
         file = new File(title);
         save_file();
+        mManager.file_existence = true;
 	}
 	
 	private void re_inquiry() {
-		if(file == null) { JOptionPane.showMessageDialog(this,"파일을 불러오십시오.", "오류",JOptionPane.INFORMATION_MESSAGE); return; }
+		if(mManager.file_existence == false) { JOptionPane.showMessageDialog(this,"파일을 불러오십시오.", "오류",JOptionPane.INFORMATION_MESSAGE); return; }
 		
+		mManager.text_area.setText("");
+		for(int i = 0; i < mManager.text.size(); i++) { mManager.text_area.append(mManager.text.get(i) + "\n"); }
 	}
 	
 	private void save_file() {
-		if(file == null) { JOptionPane.showMessageDialog(this,"파일을 불러오십시오.", "오류",JOptionPane.INFORMATION_MESSAGE); return; }
+		if(mManager.file_existence == false) { JOptionPane.showMessageDialog(this,"파일을 불러오십시오.", "오류",JOptionPane.INFORMATION_MESSAGE); return; }
 		
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(mManager.text_area.getText());
