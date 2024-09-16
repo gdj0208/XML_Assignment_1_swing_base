@@ -1,71 +1,79 @@
 package Main_Package;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
-import Main_Package.Main_Class;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
 
-public class File_Manager {
-	private Scanner my_scanner = new Scanner(System.in);
-	private Main_Class main_Class;
-	private int order = 0;
+import javax.swing.*;
+
+public class File_Manager extends JPanel {
 	
-	public File_Manager( Main_Class main_Class) { this.main_Class = main_Class; }
+	private JButton Open, Make, Re_inquiry, Save;
+	private JFrame Main_Frame;
+	private Main_Manager mManager;
+	private JFileChooser fChooser = new JFileChooser();
+    int option;
+    File file;
 	
-	public void request_load_or_make_file() {
-		print_operation();
-		get_operation();
-		load_or_make_file();
-	}
-	
-	private void print_operation() {
-		//파일 불러오기 또는 생성 요청 출력 
-		System.out.println("\nChoose your operation.");
-		System.out.println("1. Load");
-		System.out.println("2. Make");
-	}
-	
-	private void get_operation() {
-		while(true) {
-			// 파일 불러오기 또는 생성 
-			order = my_scanner.nextInt();
-			
-			// 잘못된 입력시 다시 입력 요구 
-			if(1 <= order && order <= 2) { break; }
-			System.out.println("Choose right operation");
-		}
-	}
-	
-	private void load_or_make_file() {
-		if(order == 1) { load_file(); }
-		else { make_file(); }
-	}
-	
-	// 파일 불러오기 
-	private void load_file() {
-		main_Class.file_Name = "input";
-		try { main_Class.file_data = Files.readAllLines(Paths.get(main_Class.file_Name+".txt")); } 
-		catch (IOException e) { e.printStackTrace(); }
-		System.out.println("File has successfully loaded!");
-	}
-	
-	// 파일 생성 
-	private void make_file() {
-		System.out.print("\nName your new File : ");
-		main_Class.file_Name = my_scanner.next();
+	public File_Manager(JFrame Main_Frame, Main_Manager mManager) {
+		this.Main_Frame = Main_Frame;
+		this.mManager = mManager;
 		
-		try { 
-			main_Class.file_data = new ArrayList<String>();
-			Files.write(Paths.get(main_Class.file_Name+".txt"), main_Class.file_data);
-		}
-		catch (IOException e) { e.printStackTrace(); }
-		System.out.println("File " + main_Class.file_Name + " has successfully made!");
+		make_buttons();
+		add_buttons();
 	}
 	
-	// 파일 쓰
-	public void save_file() {
-		try { Files.write(Paths.get(main_Class.file_Name+".txt"), main_Class.file_data); } 
-		catch (IOException e) { e.printStackTrace(); }
-		System.out.println("File has successfully saved!");
+	private void make_buttons() {
+		Open = new JButton("Open File");
+		Make = new JButton("Make File");
+		Re_inquiry = new JButton("Reinquiry");
+		Save = new JButton("Save File");
+		
+		Open.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { open_file(); }} );
+		Make.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { make_file(); }} );
+		Re_inquiry.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { re_inquiry(); }} );
+		Save.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { save_file(); }} );
 	}
+	
+	private void add_buttons() {
+		this.add(Open);
+		this.add(Make);
+		this.add(Re_inquiry);
+		this.add(Save);
+	}
+	
+	private void open_file() {
+		option = fChooser.showOpenDialog(fChooser);
+		if (option == JFileChooser.APPROVE_OPTION) {
+            file = fChooser.getSelectedFile();
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            	mManager.text_area.setText("");
+                String line;
+                while ((line = reader.readLine()) != null) {
+                	mManager.text_area.append(line + "\n");
+                }
+            } 
+            catch (IOException exc) { JOptionPane.showMessageDialog(this, "파일을 열 수 없습니다.", "오류", JOptionPane.ERROR_MESSAGE); }
+        }
+	}
+	
+	private void make_file() {
+		String title = "example.txt";
+        file = new File(title);
+        save_file();
+	}
+	
+	private void re_inquiry() {
+		if(file == null) { JOptionPane.showMessageDialog(this,"파일을 불러오십시오.", "오류",JOptionPane.INFORMATION_MESSAGE); return; }
+		
+	}
+	
+	private void save_file() {
+		if(file == null) { JOptionPane.showMessageDialog(this,"파일을 불러오십시오.", "오류",JOptionPane.INFORMATION_MESSAGE); return; }
+		
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write(mManager.text_area.getText());
+        } 
+		catch (IOException ex) { JOptionPane.showMessageDialog(this, "파일을 저장할 수 없습니다.", "오류", JOptionPane.ERROR_MESSAGE); }
+	}
+	
 }
