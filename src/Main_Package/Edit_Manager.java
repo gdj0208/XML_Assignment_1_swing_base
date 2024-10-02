@@ -15,7 +15,7 @@ public class Edit_Manager extends JPanel{
 	private JScrollPane scroll_text_area;
 	
 	private JTextField search_content, change_content;
-	private JButton Next, Search, Insert, Update, Delete;
+	private JButton Next, Search, Insert_Front, Insert_Back, Update, Delete;
 	private JLabel Search_Result, From, To;
 	
 	private int line_index = 0;
@@ -36,7 +36,7 @@ public class Edit_Manager extends JPanel{
 	private void init_components() {
 		Search_Result = new JLabel("Search Result");
 		
-		text_area = new JTextArea(15, 15);
+		text_area = new JTextArea(15, 14);
 		scroll_text_area = new JScrollPane(text_area);
 
 		From = new JLabel("From");
@@ -47,7 +47,8 @@ public class Edit_Manager extends JPanel{
 		
 		Next = new JButton("Next");
 		Search = new JButton("Search");
-		Insert = new JButton("Insert");
+		Insert_Front = new JButton("Insert Front");
+		Insert_Back = new JButton("Insert Back");
 		Update = new JButton("Update");
 		Delete = new JButton("Delete");
 	}
@@ -64,7 +65,8 @@ public class Edit_Manager extends JPanel{
 		this.add(change_content);
 		
 		this.add(Search);
-		this.add(Insert);
+		this.add(Insert_Front);
+		this.add(Insert_Back);
 		this.add(Update);
 		this.add(Delete);
 	}
@@ -72,7 +74,8 @@ public class Edit_Manager extends JPanel{
 	private void add_button_action_listener() {
 		Next.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { show_next(); }} );
 		Search.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { show_search_result(); }} );
-		Insert.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { insert_cont(); }} );
+		Insert_Front.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { insert_front(); }} );
+		Insert_Back.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { insert_back(); }} );
 		Update.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { update_cont(); }} );
 		Delete.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { delete_cont(); }} );
 	}
@@ -102,12 +105,20 @@ public class Edit_Manager extends JPanel{
 		show_next();
 	}
 	
-	private void insert_cont() {
+	private void insert_front() {
 		if(mManager.file_existence == false) {JOptionPane.showMessageDialog(this,"파일을 불러오거나 생성하십시오.", "오류",JOptionPane.INFORMATION_MESSAGE);}
 		if(Searching_Word == null) { JOptionPane.showMessageDialog(this,"검색할 단어를 먼저 검색해주세요.", "오류",JOptionPane.INFORMATION_MESSAGE); return; }
 		if(change_content.getText() == null) { JOptionPane.showMessageDialog(this,"수정할 단어를 입력해주십시오.", "오류",JOptionPane.INFORMATION_MESSAGE); return; }
 		
 		mManager.text.set(line_index, mManager.text.get(line_index).replaceAll(Searching_Word, change_content.getText()+Searching_Word)); 
+	}
+
+	private void insert_back() {
+		if(mManager.file_existence == false) {JOptionPane.showMessageDialog(this,"파일을 불러오거나 생성하십시오.", "오류",JOptionPane.INFORMATION_MESSAGE);}
+		if(Searching_Word == null) { JOptionPane.showMessageDialog(this,"검색할 단어를 먼저 검색해주세요.", "오류",JOptionPane.INFORMATION_MESSAGE); return; }
+		if(change_content.getText() == null) { JOptionPane.showMessageDialog(this,"수정할 단어를 입력해주십시오.", "오류",JOptionPane.INFORMATION_MESSAGE); return; }
+		
+		mManager.text.set(line_index, mManager.text.get(line_index).replaceAll(Searching_Word, Searching_Word + change_content.getText())); 
 	}
 	
 	private void update_cont() {
